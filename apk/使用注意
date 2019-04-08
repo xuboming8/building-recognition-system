@@ -1,0 +1,1 @@
+因as开发下的像素问题 可能会导致部分分辨率的安卓系统（华为，小米手机等等）的imageview，textview以及button icon不对齐的情况
