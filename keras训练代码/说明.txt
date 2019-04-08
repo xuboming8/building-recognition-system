@@ -1,0 +1,7 @@
+test1.py 可以输出.pb模型每一层的名字，以便在as中开发app时可以获得输入输出层的名字
+test2.py 可以在本地利用.pb模型输出一张图片的识别结果，从而检验从keras的.h5模型转换成tensorflow的.pb模型的正确性
+train.py 建立模型以及训练模型的代码，其中包括迁移学习的两个阶段：冻结瓶颈层训练自己加的网络层的权重和微调最后几层的权重。
+transfer_image.py 把本地的图片全部转换成224×224的大小的脚本，方便加入训练读入
+transfer.py 把keras的模型转换成tensorflow模型的代码
+mohu.py 简单模糊处理
+mohu2.py 自定义高斯模糊
