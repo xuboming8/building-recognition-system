@@ -3,7 +3,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 import numpy as np
 from keras.preprocessing import image
 from keras.applications.mobilenet import MobileNet,preprocess_input, decode_predictions
-from keras.layers import Dense, Dropout, Flatten
+from keras.layers import Dense, Dropout, Flatten,AveragePooling2D
 from keras.models import Model,Sequential, model_from_yaml, load_model
 from keras.utils import np_utils
 from sklearn.model_selection import train_test_split
@@ -18,9 +18,11 @@ def mobilenet_model():
     for layer in mobile.layers:
         layer.trainable = False
     last = mobile.output
-    x = Flatten()(last)
-    x = Dense(256, activation='relu')(x)
-    x = Dropout(0.5)(x)
+    x = AveragePooling2D((7, 7), strides=(1, 1), padding='valid')(last)
+    x = Flatten()(x)
+    x = Dropout(0.4)(x)
+    x = Dense(512, activation='relu')(x)
+    x = Dropout(0.4)(x)
     x = Dense(26, activation='softmax')(x)
     model = Model(inputs=mobile.input, outputs=x)
     return model
@@ -37,7 +39,7 @@ def pred_data():
     sgd = Adam(lr=0.0001)
     model.compile(loss='categorical_crossentropy',optimizer=sgd, metrics=['accuracy'])
 
-    path='./test/'
+    path='./test_mohu&vedio(m)/'
     num1 = float(0)
     num2 = float(0)
     for f in os.listdir(path):
@@ -60,7 +62,7 @@ def pred_data():
             num2+=1
         if 'bisa' in f and result==5:
             num2+=1
-        if 'bjdck' in f and result==6:
+        if 'bjdkc' in f and result==6:
             num2+=1
         if 'blue' in f and result==7:
             num2+=1
@@ -82,7 +84,7 @@ def pred_data():
             num2+=1
         if 'jiaodou' in f and result==16:
             num2+=1
-        if 'kufu' in f and result==17:
+        if 'lufu' in f and result==17:
             num2+=1
         if 'mali' in f and result==18:
             num2+=1
@@ -96,7 +98,7 @@ def pred_data():
             num2+=1
         if 'wuge' in f and result==23:
             num2+=1
-        if 'xinni' in f and result==24:
+        if 'xini' in f and result==24:
             num2+=1
         if 'yasheng' in f and result==25:
             num2+=1
@@ -161,14 +163,15 @@ validation_generator = test_datagen.flow_from_directory(
 
 
 def trainingV1():
-    model = mobilenet_model()
+    model=load_model('my_model.h5')
+    #model = mobilenet_model()
     sgd = Adam(lr=0.0001)
     model.compile(loss='categorical_crossentropy',optimizer=sgd, metrics=['accuracy'])
     
     history = model.fit_generator(
         train_generator,
         steps_per_epoch = 20,
-        epochs = 100,
+        epochs = 50,
         verbose = 1,
         validation_data = validation_generator,
         validation_steps = 20
@@ -186,19 +189,88 @@ def trainingV1():
 def trainingV2():
     model=load_model('my_model.h5')
     #sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
-    # model.summary()
-    # for i, layer in enumerate(model.layers):
-    #     print(i, layer.name)
     #plot_model(model, to_file='model.png')
-    for layer in model.layers[:80]:
+    for layer in model.layers[:67]:
         layer.trainable = False
-    for layer in model.layers[81:]:
+    for layer in model.layers[68:]:
         layer.trainable = True
     model.compile(loss='categorical_crossentropy', optimizer=Adam(0.0001), metrics=['accuracy'])
     history = model.fit_generator(
         train_generator,
         steps_per_epoch = 20,
-        epochs = 25,
+        epochs = 100,
+        verbose = 1,
+        validation_data = validation_generator,
+        validation_steps = 20
+        )
+    
+    yaml_string = model.to_yaml()
+    with open('./building.yaml', 'w') as outfile:
+        outfile.write(yaml_string)
+    model.save_weights('./building.h5')
+    model.save('my_model.h5')
+
+    training_vis(history)
+
+
+def trainingV3():
+    model=load_model('my_model.h5')
+    #sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
+    #plot_model(model, to_file='model.png')
+    for layer in model.layers[:49]:
+        layer.trainable = False
+    for layer in model.layers[50:67]:
+        layer.trainable = True
+
+    for layer in model.layers[68:]:
+        layer.trainable = False
+
+    # for layer in model.layers[68:86]:
+    #     layer.trainable = False
+    # for layer in model.layers[87:]:
+    #     layer.trainable = True
+
+    model.compile(loss='categorical_crossentropy', optimizer=Adam(0.0001), metrics=['accuracy'])
+    history = model.fit_generator(
+        train_generator,
+        steps_per_epoch = 20,
+        epochs = 20,
+        verbose = 1,
+        validation_data = validation_generator,
+        validation_steps = 20
+        )
+    
+    yaml_string = model.to_yaml()
+    with open('./building.yaml', 'w') as outfile:
+        outfile.write(yaml_string)
+    model.save_weights('./building.h5')
+    model.save('my_model.h5')
+
+    training_vis(history)
+
+
+def trainingV4():
+    model=load_model('my_model.h5')
+    #sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
+    #plot_model(model, to_file='model.png')
+    for layer in model.layers[:61]:
+        layer.trainable = False
+    for layer in model.layers[62:67]:
+        layer.trainable = True
+
+    for layer in model.layers[68:]:
+        layer.trainable = False
+
+    # for layer in model.layers[68:86]:
+    #     layer.trainable = False
+    # for layer in model.layers[87:]:
+    #     layer.trainable = True
+
+    model.compile(loss='categorical_crossentropy', optimizer=Adam(0.0001), metrics=['accuracy'])
+    history = model.fit_generator(
+        train_generator,
+        steps_per_epoch = 20,
+        epochs = 20,
         verbose = 1,
         validation_data = validation_generator,
         validation_steps = 20
@@ -214,6 +286,15 @@ def trainingV2():
 
 
 
+def show():
+    model=load_model('my_model.h5')
+    #model = mobilenet_model()
+    #model = MobileNet(include_top=True, weights ='imagenet', input_shape=(224,224,3))
+    model.summary()
+    for i, layer in enumerate(model.layers):
+        print(i, layer.name)
+
+
 if __name__ == '__main__':
     
     #trainingV1()
@@ -222,4 +303,14 @@ if __name__ == '__main__':
 
     #trainingV2()
 
+    #pred_data()
+
+    #trainingV3()
+
     pred_data()
+
+    #trainingV4()
+
+    #pred_data()
+
+    #show()
